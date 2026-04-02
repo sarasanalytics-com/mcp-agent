@@ -1,0 +1,37 @@
+.dockerignore
+  48143fa7c47d7350 1-19
+railway.toml
+  48143fa7c47d7350 1-10
+render.yaml
+  48143fa7c47d7350 1-24
+Dockerfile
+  48143fa7c47d7350 1-45
+README.md
+  48143fa7c47d7350 205-226
+DEPLOYMENT.md
+  48143fa7c47d7350 1-396
+fly.toml
+  48143fa7c47d7350 1-55
+docker-compose.yml
+  48143fa7c47d7350 1-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.4",
+  "base_commit_sha": "5a045a935f7046772570b7e7ea3c504913d6ad41",
+  "prompts": {
+    "48143fa7c47d7350": {
+      "agent_id": {
+        "tool": "windsurf",
+        "id": "92b16bd8-e9f5-41c7-896e-cd8ef067ace9",
+        "model": "unknown"
+      },
+      "human_author": "Pratishtha",
+      "messages": [],
+      "total_additions": 595,
+      "total_deletions": 0,
+      "accepted_lines": 595,
+      "overriden_lines": 0
+    }
+  }
+}

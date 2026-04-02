@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: mcp-agent
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: SENTRY_AUTH_TOKEN
+        sync: false
+      - key: SENTRY_ORG_SLUG
+        sync: false
+      - key: CLICKUP_API_TOKEN
+        sync: false
+      - key: CLICKUP_WORKSPACE_ID
+        sync: false
+      - key: API_KEY
+        sync: false

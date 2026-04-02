@@ -202,6 +202,28 @@ curl -X POST http://localhost:3001/api/process-issue \
 2. Create a new integration with webhook URL: `https://your-domain/webhook/sentry`
 3. Enable the **Issue** alert
 
+## Deployment
+
+Ready to deploy? See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for comprehensive deployment guides.
+
+### Quick Deploy Options
+
+| Platform | Difficulty | Free Tier | Best For |
+|----------|-----------|-----------|----------|
+| **[Railway](https://railway.app)** | ⭐ Easy | ✅ Yes | Quick start, auto-deploy from GitHub |
+| **[Fly.io](https://fly.io)** | ⭐⭐ Medium | ✅ Yes | Global edge deployment |
+| **[Render](https://render.com)** | ⭐ Easy | ✅ Yes | Simple auto-deploy |
+| **Docker** | ⭐⭐⭐ Advanced | N/A | Self-hosted, full control |
+
+**Deployment files included:**
+- `Dockerfile` - Production-ready Docker image
+- `docker-compose.yml` - Local Docker setup
+- `railway.toml` - Railway configuration
+- `fly.toml` - Fly.io configuration
+- `render.yaml` - Render configuration
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+
 ## Adding a New MCP Provider
 
 1. **Via env vars** — add a new block in `buildMCPProviderConfigs()` in `src/config.ts`:

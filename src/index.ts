@@ -2,6 +2,7 @@ import { createHmac, timingSafeEqual, randomUUID } from "crypto";
 import { env, buildMCPProviderConfigs } from "./config";
 import { logger } from "./logger";
 import { mcpRegistry } from "./mcp";
+import { prefetchClickUpData } from "./mcp/prefetch";
 import { runPipeline } from "./pipeline";
 import { runSentryClickUpPreset } from "./presets/sentry-clickup";
 
@@ -95,6 +96,11 @@ interface SentryWebhookBody {
 for (const config of buildMCPProviderConfigs()) {
   mcpRegistry.register(config);
 }
+
+// ── Prefetch ClickUp data to warm cache (reduces API calls) ──
+prefetchClickUpData().catch((err) => 
+  logger.warn("Prefetch failed (non-critical)", { error: String(err) })
+);
 
 const server = Bun.serve({
   port: env.PORT,

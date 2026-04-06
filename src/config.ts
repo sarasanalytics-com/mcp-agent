@@ -32,6 +32,17 @@ const envSchema = z.object({
 
   // Tool cache TTL in milliseconds (0 = cache forever, default)
   TOOL_CACHE_TTL_MS: z.coerce.number().optional().default(0),
+
+  // Rate limiting configuration
+  CLICKUP_MAX_REQUESTS_PER_MINUTE: z.coerce.number().optional().default(50),
+  CLICKUP_MAX_REQUESTS_PER_HOUR: z.coerce.number().optional().default(1000),
+  CLICKUP_MAX_CONCURRENT_REQUESTS: z.coerce.number().optional().default(5),
+
+  // Cache TTL configuration (in milliseconds)
+  CACHE_TTL_WORKSPACE_HIERARCHY: z.coerce.number().optional().default(30 * 60 * 1000),
+  CACHE_TTL_WORKSPACE_MEMBERS: z.coerce.number().optional().default(60 * 60 * 1000),
+  CACHE_TTL_LIST_DETAILS: z.coerce.number().optional().default(30 * 60 * 1000),
+  CACHE_TTL_CUSTOM_FIELDS: z.coerce.number().optional().default(60 * 60 * 1000),
 });
 
 export type Env = z.infer<typeof envSchema>;

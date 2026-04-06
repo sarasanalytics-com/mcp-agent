@@ -2,6 +2,7 @@ import type { Tool as MCPTool } from "@modelcontextprotocol/sdk/types.js";
 import { env } from "../config";
 import { logger } from "../logger";
 import { BaseMCPProvider } from "./base-provider";
+import { CachedMCPProvider } from "./cached-provider";
 import type { MCPProvider, MCPProviderConfig } from "./types";
 
 /**
@@ -20,11 +21,15 @@ class MCPRegistry {
       return null;
     }
 
-    const provider = new BaseMCPProvider(config, {
-      cacheTtlMs: env.TOOL_CACHE_TTL_MS,
-    });
+    // Use CachedMCPProvider for ClickUp to enable caching and rate limiting
+    const provider = config.name === 'clickup'
+      ? new CachedMCPProvider(config, { cacheTtlMs: env.TOOL_CACHE_TTL_MS })
+      : new BaseMCPProvider(config, { cacheTtlMs: env.TOOL_CACHE_TTL_MS });
+
     this.providers.set(config.name, provider);
-    logger.info(`Registered MCP provider: ${config.name}`);
+    logger.info(`Registered MCP provider: ${config.name}`, {
+      optimized: config.name === 'clickup',
+    });
     return provider;
   }
 

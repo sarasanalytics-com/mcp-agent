@@ -1,0 +1,57 @@
+src/mcp/cached-provider.ts
+  c14254813ecaabd0 1-195
+src/cache/index.ts
+  c14254813ecaabd0 1-98
+.env.example
+  c14254813ecaabd0 34-48
+src/queue/index.ts
+  c14254813ecaabd0 1-234
+docs/RATE_LIMIT_HANDLING.md
+  c14254813ecaabd0 1-267
+docs/QUICK_START_OPTIMIZATION.md
+  c14254813ecaabd0 1-139
+OPTIMIZATION.md
+  c14254813ecaabd0 1-364
+docs/OPTIMIZATION_SUMMARY.md
+  c14254813ecaabd0 1-316
+src/mcp/registry.ts
+  c14254813ecaabd0 5,24-28,30-32
+src/config.ts
+  c14254813ecaabd0 35-45
+examples/optimized-usage.ts
+  c14254813ecaabd0 1-142
+src/cache/clickup-cache.ts
+  c14254813ecaabd0 1-164
+package.json
+  c14254813ecaabd0 15-16
+src/utils/optimized-clickup-helper.ts
+  c14254813ecaabd0 1-171
+src/mcp/prefetch.ts
+  c14254813ecaabd0 1-67
+docs/ARCHITECTURE_FIXES.md
+  c14254813ecaabd0 1-323
+src/queue/clickup-queue.ts
+  c14254813ecaabd0 1-79
+src/index.ts
+  c14254813ecaabd0 5,100-104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "f5942ac96e69b9469b35fbaf829c77faba2805ba",
+  "prompts": {
+    "c14254813ecaabd0": {
+      "agent_id": {
+        "tool": "windsurf",
+        "id": "7a5daf01-bd91-4fa8-90d9-e59e78162aec",
+        "model": "unknown"
+      },
+      "human_author": "Pratishtha",
+      "messages": [],
+      "total_additions": 2618,
+      "total_deletions": 21,
+      "accepted_lines": 2602,
+      "overriden_lines": 0
+    }
+  }
+}

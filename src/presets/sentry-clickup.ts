@@ -4,6 +4,7 @@ import { REPO_UUID_MAP } from "../repo-mapping";
 import { preprocessSentryIssue, generateIssueHash, type MinimalSentryIssue } from "../utils/sentry-preprocessor";
 import { deduplicationCache } from "../cache/deduplication-cache";
 import { mcpRegistry } from "../mcp";
+import { logger } from "../logger";
 
 /**
  * Preset: Sentry → ClickUp triage pipeline.
@@ -65,25 +66,71 @@ export async function runSentryClickUpPreset(
   organizationSlug = "saras-analytics"
 ): Promise<AgentResult> {
   // Step 1: Fetch full Sentry issue data
-  const fullIssue = await mcpRegistry.executeTool("get_sentry_resource", {
-    resourceType: "issue",
-    resourceId: issueId,
-    organizationSlug,
-  });
-
-  // Parse the response - handle both JSON and markdown-wrapped JSON
-  let fullIssueData: any;
+  let fullIssue: string;
   try {
-    // Try direct JSON parse first
-    fullIssueData = JSON.parse(fullIssue);
+    fullIssue = await mcpRegistry.executeTool("get_sentry_resource", {
+      resourceType: "issue",
+      resourceId: issueId,
+      organizationSlug,
+    });
   } catch (err) {
-    // If that fails, try to extract JSON from markdown code blocks
-    const jsonMatch = fullIssue.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch && jsonMatch[1]) {
-      fullIssueData = JSON.parse(jsonMatch[1]);
-    } else {
-      // Log the actual response for debugging
-      throw new Error(`Failed to parse Sentry response. Error: ${err}. Response preview: ${fullIssue.slice(0, 200)}`);
+    logger.error("Failed to fetch Sentry issue", { issueId, organizationSlug, error: String(err) });
+    throw new Error(`Failed to fetch Sentry issue ${issueId}: ${String(err)}`);
+  }
+
+  // Parse the response - handle JSON, markdown-wrapped JSON, or plain markdown
+  let fullIssueData: any;
+  
+  // Check if response is markdown format (starts with # or contains markdown headers)
+  if (fullIssue.startsWith("#") || fullIssue.includes("**Description**")) {
+    // Handle plain markdown response from Sentry MCP
+    // Extract key information from markdown format
+    logger.info("Parsing markdown-formatted Sentry response", { issueId });
+    
+    const titleMatch = fullIssue.match(/^#\s+Issue\s+([^\s]+)/);
+    const descMatch = fullIssue.match(/\*\*Description\*\*:\s*(.+?)(?:\n|$)/);
+    const culpritMatch = fullIssue.match(/\*\*Culprit\*\*:\s*(.+?)(?:\n|$)/);
+    
+    const description = descMatch?.[1] || 'Unknown error';
+    fullIssueData = {
+      id: issueId,
+      title: titleMatch?.[1] || `Issue ${issueId}`,
+      metadata: {
+        type: description.split(':')[0],
+        value: description,
+      },
+      culprit: culpritMatch?.[1] || 'Unknown',
+      shortId: titleMatch?.[1] || issueId,
+      // Store the full markdown for context
+      _markdownSource: fullIssue.slice(0, 1000),
+    };
+  } else {
+    // Try direct JSON parse
+    try {
+      fullIssueData = JSON.parse(fullIssue);
+    } catch (err) {
+      // If that fails, try to extract JSON from markdown code blocks
+      const jsonMatch = fullIssue.match(/```json\s*([\s\S]*?)```/);
+      if (jsonMatch && jsonMatch[1]) {
+        try {
+          fullIssueData = JSON.parse(jsonMatch[1]);
+        } catch (parseErr) {
+          logger.error("Failed to parse JSON from markdown block", { 
+            issueId, 
+            error: String(parseErr),
+            content: jsonMatch[1].slice(0, 200) 
+          });
+          throw new Error(`Invalid JSON in markdown block: ${String(parseErr)}`);
+        }
+      } else {
+        // Log the actual response for debugging
+        logger.error("Failed to parse Sentry response", { 
+          issueId, 
+          error: String(err),
+          responsePreview: fullIssue.slice(0, 500) 
+        });
+        throw new Error(`Failed to parse Sentry response. Error: ${err}. Response preview: ${fullIssue.slice(0, 200)}`);
+      }
     }
   }
 
@@ -123,7 +170,17 @@ export async function runSentryClickUpPreset(
   // Step 5: Store in deduplication cache
   // Extract ticket URL from tool calls if available
   const createTaskCall = result.toolCalls.find((tc) => tc.tool === "clickup_create_task");
-  const ticketUrl = createTaskCall ? JSON.parse(createTaskCall.result)?.url : undefined;
+  let ticketUrl: string | undefined;
+  if (createTaskCall) {
+    try {
+      ticketUrl = JSON.parse(createTaskCall.result)?.url;
+    } catch (err) {
+      logger.warn("Failed to parse tool result as JSON", { 
+        tool: createTaskCall.tool, 
+        resultPreview: createTaskCall.result.slice(0, 200) 
+      });
+    }
+  }
 
   deduplicationCache.store(hash, issueId, undefined, ticketUrl);
 

@@ -34,6 +34,9 @@ export interface RunAgentOptions {
 
   /** Optional subset of provider names to use (defaults to all registered) */
   providers?: string[];
+
+  /** Optional: filter to specific tool names (reduces token usage) */
+  allowedTools?: string[];
 }
 
 /** Convert MCP tool schemas → Anthropic tool definitions */
@@ -76,6 +79,12 @@ export async function runAgent(opts: RunAgentOptions): Promise<AgentResult> {
     filteredTools = Object.entries(byProvider)
       .filter(([name]) => allowedProviders.has(name))
       .flatMap(([, tools]) => tools);
+  }
+
+  // If specific tools requested, filter to only those
+  if (opts.allowedTools?.length) {
+    const allowedToolNames = new Set(opts.allowedTools);
+    filteredTools = filteredTools.filter((t) => allowedToolNames.has(t.name));
   }
 
   const tools = mcpToolsToAnthropic(filteredTools);

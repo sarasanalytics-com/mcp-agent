@@ -5,9 +5,17 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3001),
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).optional().default("info"),
 
+  // LLM Provider Selection
+  LLM_PROVIDER: z.enum(["anthropic", "openai"]).optional().default("anthropic"),
+  
   // Anthropic (LLM)
-  ANTHROPIC_API_KEY: z.string().min(1, "ANTHROPIC_API_KEY is required"),
-  ANTHROPIC_MODEL: z.string().default("claude-sonnet-4-20250514"),
+  ANTHROPIC_API_KEY: z.string().optional().default(""),
+  ANTHROPIC_MODEL: z.string().default("claude-3-5-haiku-20241022"),
+  
+  // OpenAI (LLM)
+  OPENAI_API_KEY: z.string().optional().default(""),
+  OPENAI_MODEL: z.string().default("gpt-4o-mini"),
+  
   AGENT_MAX_TOOL_ROUNDS: z.coerce.number().default(15),
 
   // Default system prompt (optional — can be overridden per request)
@@ -58,7 +66,19 @@ function loadEnv(): Env {
     process.exit(1);
   }
 
-  return result.data;
+  const data = result.data;
+
+  // Validate that the selected provider has an API key
+  if (data.LLM_PROVIDER === "anthropic" && !data.ANTHROPIC_API_KEY) {
+    console.error("❌ LLM_PROVIDER is set to 'anthropic' but ANTHROPIC_API_KEY is not set");
+    process.exit(1);
+  }
+  if (data.LLM_PROVIDER === "openai" && !data.OPENAI_API_KEY) {
+    console.error("❌ LLM_PROVIDER is set to 'openai' but OPENAI_API_KEY is not set");
+    process.exit(1);
+  }
+
+  return data;
 }
 
 export const env = loadEnv();

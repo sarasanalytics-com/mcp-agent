@@ -5,6 +5,7 @@ import { mcpRegistry } from "./mcp";
 import { prefetchClickUpData } from "./mcp/prefetch";
 import { runPipeline } from "./pipeline";
 import { runSentryClickUpPreset } from "./presets/sentry-clickup";
+import { getOptimizationProfile, applyOptimizationProfile } from "./llm/optimization-profiles";
 
 const { version } = await import("../package.json");
 
@@ -172,6 +173,8 @@ async function handleRequest(req: Request, url: URL, method: string, requestId: 
       providers?: string[];
       maxRounds?: number;
       maxTokens?: number;
+      allowedTools?: string[];
+      optimizationProfile?: string;
     }>(req);
 
     if (!body?.prompt) {
@@ -179,13 +182,42 @@ async function handleRequest(req: Request, url: URL, method: string, requestId: 
     }
 
     try {
-      const result = await runPipeline({
+      // Apply optimization profile if specified
+      let options = {
         prompt: body.prompt,
         systemPrompt: body.systemPrompt,
         providers: body.providers,
         maxRounds: body.maxRounds,
         maxTokens: body.maxTokens,
-      });
+        allowedTools: body.allowedTools,
+      };
+
+      if (body.optimizationProfile) {
+        const profile = getOptimizationProfile(body.optimizationProfile);
+        if (!profile) {
+          return json(
+            { error: `Unknown optimization profile: ${body.optimizationProfile}. Available: aggressive, balanced, exploratory, fast` },
+            400
+          );
+        }
+
+        const profileSettings = applyOptimizationProfile(profile, body.systemPrompt);
+        options = {
+          ...options,
+          maxRounds: body.maxRounds ?? profileSettings.maxRounds,
+          maxTokens: body.maxTokens ?? profileSettings.maxTokens,
+          systemPrompt: profileSettings.systemPrompt,
+        };
+
+        logger.info("Applying optimization profile", {
+          profile: body.optimizationProfile,
+          maxRounds: options.maxRounds,
+          maxTokens: options.maxTokens,
+          jsonOnly: profile.jsonOnly,
+        });
+      }
+
+      const result = await runPipeline(options);
       return json({ ...result, requestId });
     } catch (err) {
       logger.error("Agent run failed", { requestId, error: String(err) });

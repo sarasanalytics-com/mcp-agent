@@ -1,0 +1,45 @@
+docs/COST_OPTIMIZATION.md
+  012d5209498dcb2e 1-201
+src/cache/deduplication-cache.ts
+  012d5209498dcb2e 1-87
+src/llm/optimization-profiles.ts
+  012d5209498dcb2e 1-99
+src/config.ts
+  012d5209498dcb2e 8-10,12-18,69-81
+.env.example
+  012d5209498dcb2e 5-9,11-19
+docs/GENERIC_OPTIMIZATION.md
+  012d5209498dcb2e 1-346
+src/presets/sentry-clickup.ts
+  012d5209498dcb2e 4-6,15-24,26-43,45-46,48-51,53-59,62,67-111,113-120,122-130
+src/utils/sentry-preprocessor.ts
+  012d5209498dcb2e 1-99
+docs/MIGRATION_COST_OPTIMIZATION.md
+  012d5209498dcb2e 1-129
+docs/ADVANCED_COST_OPTIMIZATION.md
+  012d5209498dcb2e 1-271
+src/index.ts
+  012d5209498dcb2e 8,176-177,185-186,192-220
+src/llm/agent.ts
+  012d5209498dcb2e 37-39,84-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "b57a7a81a0927572387d73de67f377b21431e9df",
+  "prompts": {
+    "012d5209498dcb2e": {
+      "agent_id": {
+        "tool": "windsurf",
+        "id": "e0d80e92-de7e-4a4a-a0fd-6dbd1ccf638f",
+        "model": "unknown"
+      },
+      "human_author": "Pratishtha",
+      "messages": [],
+      "total_additions": 1456,
+      "total_deletions": 247,
+      "accepted_lines": 1420,
+      "overriden_lines": 0
+    }
+  }
+}

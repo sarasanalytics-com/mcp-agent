@@ -1,0 +1,23 @@
+src/presets/sentry-clickup.ts
+  26de8273c3646d6d 7,69,71-75,77-81,83-133,173-183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "48111e208771eb813bf3a2db72eadd721c5d1f27",
+  "prompts": {
+    "26de8273c3646d6d": {
+      "agent_id": {
+        "tool": "windsurf",
+        "id": "b9e48419-6163-4768-953d-12660ff8faf2",
+        "model": "unknown"
+      },
+      "human_author": "Pratishtha",
+      "messages": [],
+      "total_additions": 121,
+      "total_deletions": 64,
+      "accepted_lines": 76,
+      "overriden_lines": 0
+    }
+  }
+}
